@@ -23,7 +23,7 @@ Here're some of the project's best features:
 
 ```
 git clone https://github.com/jagratijain/Clickshop.git
-cd Clickshop---Frontend
+cd Clickshop
 ```
 
 <p>2. Install dependencies:</p>
