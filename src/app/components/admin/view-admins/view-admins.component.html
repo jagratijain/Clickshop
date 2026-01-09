@@ -1,0 +1,220 @@
+<app-admin-layout>
+    <div
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-gray-200 dark:border-gray-800 pb-6">
+        <h1 class="text-2xl font-light uppercase tracking-wide text-gray-900 dark:text-white">Admin Management</h1>
+        <div class="w-full sm:w-auto">
+            <div class="relative">
+                <input type="text" placeholder="Search admins..." [(ngModel)]="searchTerm" (input)="filterAdmins()"
+                    class="pl-10 pr-4 py-3 w-full border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white">
+                <div class="absolute left-3 top-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center py-16">
+        <div class="relative w-16 h-16">
+            <div class="absolute top-0 left-0 w-full h-full border border-gray-200 dark:border-gray-800"></div>
+            <div
+                class="absolute top-0 left-0 w-full h-full border border-t-gray-900 dark:border-t-white border-l-gray-900 dark:border-l-white animate-spin">
+            </div>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="errorMessage"
+        class="border border-red-600 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 px-4 py-3 mb-6">
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-sm text-red-600 dark:text-gray-300">{{ errorMessage }}</p>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage"
+        class="border border-green-600 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 px-4 py-3 mb-6">
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7" />
+            </svg>
+            <p class="text-sm text-green-600 dark:text-gray-300">{{ successMessage }}</p>
+        </div>
+    </div>
+
+    <!-- Admin Table -->
+    <div *ngIf="!isLoading && !errorMessage"
+        class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+                <thead class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                    <tr>
+                        <th scope="col"
+                            class="px-6 py-4 text-left text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            Admin
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-4 text-left text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            Contact
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-4 text-left text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            Email
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-4 text-left text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            Address
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-4 text-left text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            Role
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-4 text-right text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                    <tr *ngFor="let admin of filteredAdmins"
+                        class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div
+                                    class="flex-shrink-0 h-10 w-10 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+                                    <span class="text-gray-900 dark:text-white font-medium">{{ admin.name.charAt(0)
+                                        }}</span>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ admin.name }}
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ admin.username }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-700 dark:text-gray-300">{{ admin.phone }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-700 dark:text-gray-300">{{ admin.email }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">{{ admin.address }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span
+                                class="px-3 py-1 inline-flex text-xs font-semibold uppercase tracking-wide rounded-full"
+                                [ngClass]="{
+    'bg-blue-100 text-blue-800  dark:text-blue-400 ': admin.role === 'ADMIN',
+    'bg-yellow-100 text-yellow-700  dark:text-yellow-400 ': admin.role === 'SUPER_ADMIN'
+  }">
+                                {{ admin.role }}
+                            </span>
+
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex justify-end">
+                                <button (click)="demoteToUser(admin)" [disabled]="admin.role === 'SUPER_ADMIN'"
+                                    [class.opacity-50]="admin.role === 'SUPER_ADMIN'"
+                                    [class.cursor-not-allowed]="admin.role === 'SUPER_ADMIN'"
+                                    class="inline-flex items-center px-3 py-1 text-xs uppercase tracking-wide font-medium border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                    Demote to User
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div
+            class="bg-white dark:bg-gray-900 px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-800">
+            
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                        Showing <span class="font-medium">{{ (currentPage - 1) * pageSize + 1 }}</span> to <span
+                            class="font-medium">{{ Math.min(currentPage * pageSize, filteredAdmins.length) }}</span> of
+                        <span class="font-medium">{{ filteredAdmins.length }}</span> results
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex -space-x-px" aria-label="Pagination">
+                        <a (click)="previousPage()" [class.cursor-not-allowed]="currentPage === 1"
+                            [class.opacity-50]="currentPage === 1"
+                            class="relative inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white transition-colors">
+                            <span class="sr-only">Previous</span>
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </a>
+
+                        <a *ngFor="let page of getPageNumbers()" (click)="goToPage(page)"
+                            [class.bg-gray-900]="currentPage === page" [class.dark:bg-white]="currentPage === page"
+                            [class.text-gray-600]="currentPage === page" [class.dark:text-gray-900]="currentPage === page"
+                            [class.border-gray-900]="currentPage === page"
+                            [class.dark:border-white]="currentPage === page"
+                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white transition-colors">
+                            {{ page }}
+                        </a>
+
+                        <a (click)="nextPage()" [class.cursor-not-allowed]="currentPage === totalPages"
+                            [class.opacity-50]="currentPage === totalPages"
+                            class="relative inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white transition-colors">
+                            <span class="sr-only">Next</span>
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- No Admins Found -->
+    <div *ngIf="!isLoading && !errorMessage && filteredAdmins.length === 0"
+        class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 border border-gray-200 dark:border-gray-800 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-900 dark:text-white" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+        </div>
+        <h2 class="text-xl font-light uppercase tracking-wide text-gray-900 dark:text-white mb-3">No admins found</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">Try adjusting your search criteria</p>
+        <button (click)="searchTerm = ''; filterAdmins()"
+            class="inline-flex items-center px-5 py-2.5 text-xs uppercase tracking-wide font-medium bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-gray-900 dark:border-white hover:bg-black dark:hover:bg-gray-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Reset Search
+        </button>
+    </div>
+</app-admin-layout>

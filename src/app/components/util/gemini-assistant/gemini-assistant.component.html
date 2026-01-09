@@ -1,0 +1,185 @@
+<!-- Floating AI Assistant Button -->
+<button 
+  (click)="toggleModal()" 
+  class="fixed bottom-6 right-6 bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-gray-900 dark:border-white p-4 rounded-full shadow-lg hover:bg-black dark:hover:bg-gray-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white focus:ring-offset-2 z-50 hover:scale-110"
+  aria-label="Open AI Assistant">
+  <lucide-icon name="Bot" class="h-6 w-6"></lucide-icon>
+</button>
+
+<!-- Modal -->
+<div *ngIf="isModalOpen" 
+     class="fixed inset-0 backdrop-blur-lg bg-gray-500/30 dark:bg-gray-900/30 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out">
+  <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-xl w-full max-w-4xl mx-4 max-h-[85vh] flex flex-col transform">
+    
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800">
+      <h3 class="text-xl font-light uppercase tracking-wide text-gray-900 dark:text-white flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+        ClickShop AI
+      </h3>
+      <div class="flex items-center space-x-2">
+        <!-- Clear chat button -->
+        <button 
+          (click)="clearChat()" 
+          class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
+          title="Clear Chat">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+        <!-- Close button -->
+        <button 
+          (click)="toggleModal()" 
+          class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Chat Container -->
+    <div #chatContainer class="p-6 flex-1 overflow-y-auto">
+      
+      <!-- Sample Prompts (only show when no chat history) -->
+      <div *ngIf="chatHistory.length <= 1" class="mb-6">
+        <h4 class="text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-2">Try these suggestions:</h4>
+        <div class="flex flex-wrap gap-2">
+          <button 
+            *ngFor="let prompt of samplePrompts" 
+            (click)="useSamplePrompt(prompt)"
+            class="px-4 py-1.5 text-xs uppercase tracking-wide font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            {{prompt}}
+          </button>
+        </div>
+      </div>
+      
+      <!-- Chat Messages -->
+      <div *ngFor="let message of chatHistory; trackBy: trackByMessageId" class="message-container">
+        
+        <!-- User Message -->
+        <div *ngIf="message.type === 'user'" class="flex justify-end mb-4">
+          <div class="max-w-[80%] bg-gray-900 dark:bg-white text-white dark:text-gray-900 p-4 rounded-lg shadow">
+            <div class="text-sm" [innerHTML]="message.formattedContent || message.content"></div>
+            <div class="text-xs mt-2 opacity-75">{{getTimeString(message.timestamp)}}</div>
+          </div>
+        </div>
+        
+        <!-- AI Message -->
+        <div *ngIf="message.type === 'ai'" class="flex justify-start mb-6">
+          <div class="flex max-w-full w-full">
+            <!-- Avatar -->
+            <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-full mr-3 shrink-0 self-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            
+            <!-- Message Content -->
+            <div class="flex-1">
+              <!-- Text Response -->
+              <div *ngIf="!message.isTyping && message.content" class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 rounded-lg shadow mb-4">
+                <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-2" 
+                     [innerHTML]="message.formattedContent || message.content"></div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-2">{{getTimeString(message.timestamp)}}</div>
+              </div>
+              
+              <!-- Typing indicator -->
+              <div *ngIf="message.isTyping" class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 rounded-lg shadow">
+                <div class="flex items-center space-x-1">
+                  <div class="flex space-x-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                  </div>
+                  <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">AI is thinking...</span>
+                </div>
+              </div>
+              
+              <!-- Product Cards -->
+              <div *ngIf="message.products && message.products.length > 0" class="space-y-3">
+                <div *ngFor="let product of message.products; trackBy: trackByProductId" 
+                     class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group">
+                  
+                  <div class="p-4">
+                    <!-- Product Header -->
+                    <div class="flex justify-between items-start mb-3">
+                      <div class="flex-1">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          {{product.name}}
+                        </h4>
+                        <div class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
+                          {{formatPrice(product.price)}}
+                        </div>
+                      </div>
+                      <!-- Product ID Badge -->
+                      <div class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-full">
+                        ID: {{product.id}}
+                      </div>
+                    </div>
+                    
+                    <!-- Product Features -->
+                    <div class="mb-4">
+                      <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                        {{product.features}}
+                      </p>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-3">
+                      <button 
+                        (click)="navigateToProduct(product.id)"
+                        class="flex-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-2 rounded-lg hover:bg-black dark:hover:bg-gray-100 transition-colors text-sm font-medium flex items-center justify-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span>View Details</span>
+                      </button>
+                      
+                    </div>
+                  </div>
+                  
+                  <!-- Hover Effect Border -->
+                  <div class="h-1 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="isLoading" class="flex items-center justify-center py-8">
+        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900 dark:border-white"></div>
+      </div>
+    </div>
+    
+    <!-- Input Area -->
+    <div class="border-t border-gray-200 dark:border-gray-800 p-4">
+      <div class="flex space-x-2">
+        <input 
+          type="text" 
+          [(ngModel)]="userPrompt" 
+          placeholder="Ask Our AI..." 
+          class="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:border-gray-900 dark:focus:border-white transition-all"
+          (keyup.enter)="sendPrompt()"
+          [disabled]="isLoading">
+        <button 
+          (click)="sendPrompt()" 
+          [disabled]="isLoading || !userPrompt.trim()"
+          class="inline-flex items-center justify-center px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-gray-900 dark:border-white hover:bg-black dark:hover:bg-gray-100 text-xs uppercase tracking-wide font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white focus:ring-offset-2 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed">
+          <!-- Send icon -->
+          <svg *ngIf="!isLoading" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+          </svg>
+          <!-- Loading spinner -->
+          <div *ngIf="isLoading" class="h-5 w-5 border-t-2 border-b-2 border-white dark:border-gray-900 rounded-full animate-spin"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

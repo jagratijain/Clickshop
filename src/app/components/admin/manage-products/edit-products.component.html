@@ -1,0 +1,219 @@
+<!-- edit-products.component.html -->
+<app-admin-layout>
+  <div class="flex justify-between items-center mb-8 border-b border-gray-200 dark:border-gray-800 pb-6">
+    <h1 class="text-2xl font-light uppercase tracking-wide text-gray-900 dark:text-white">
+      {{ isNewProduct ? 'Add Product' : 'Edit Product' }}
+    </h1>
+    <button 
+      (click)="goBack()" 
+      class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"  
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span class="text-xs uppercase tracking-wide">Back to Products</span>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading || isCategoryLoading" class="flex justify-center py-12">
+    <div class="relative w-16 h-16">
+      <div class="absolute top-0 left-0 w-full h-full border border-gray-200 dark:border-gray-800"></div>
+      <div class="absolute top-0 left-0 w-full h-full border border-t-gray-900 dark:border-t-white border-l-gray-900 dark:border-l-white animate-spin"></div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="border border-red-600 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 px-4 py-3 mb-6">
+    <div class="flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <p class="text-sm text-red-600 dark:text-gray-300">{{ errorMessage }}</p>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="border border-green-600 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 px-4 py-3 mb-6">
+    <div class="flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7" />
+      </svg>
+      <p class="text-sm text-green-600  dark:text-gray-300">{{ successMessage }}</p>
+    </div>
+  </div>
+
+  <!-- Product Form -->
+  <div *ngIf="!isLoading" class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Product Name -->
+        <div class="md:col-span-2">
+          <label for="name" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Product Name <span class="text-gray-700 dark:text-gray-300">*</span></label>
+          <input 
+            type="text" 
+            id="name" 
+            formControlName="name"
+            placeholder="Name"
+            class="w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white"
+            [ngClass]="{'border-red-500 dark:border-red-500': isFieldInvalid('name')}"
+          >
+          <div *ngIf="isFieldInvalid('name')" class="mt-1 text-xs text-gray-700 dark:text-gray-300">
+            Product name is required
+          </div>
+        </div>
+        
+        <!-- Category -->
+        <div>
+          <label for="category" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Category <span class="text-gray-700 dark:text-gray-300">*</span></label>
+          <select 
+            id="category" 
+            formControlName="category"
+            class="w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white"
+            [ngClass]="{'border-red-500 dark:border-red-500': isFieldInvalid('category')}"
+            [disabled]="isCategoryLoading"
+          >
+            <option value="">Select a category</option>
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+            <option value="Other">Other</option>
+          </select>
+          <div *ngIf="isFieldInvalid('category')" class="mt-1 text-xs text-gray-700 dark:text-gray-300">
+            Category is required
+          </div>
+        </div>
+
+        <div *ngIf="productForm.get('category')?.value === 'Other'">
+          <label class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1" for="customCategory">Custom Category</label>
+          <input type="text" formControlName="customCategory" class="w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white" placeholder="Custom category" />
+        </div>
+        
+        <!-- Price -->
+        <div>
+          <label for="price" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Price (₹) <span class="text-gray-700 dark:text-gray-300">*</span></label>
+          <input 
+            type="number" 
+            id="price" 
+            formControlName="price"
+            class="w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white"
+            [ngClass]="{'border-red-500 dark:border-red-500': isFieldInvalid('price')}"
+            min="0"
+            step="0.01"
+          >
+          <div *ngIf="isFieldInvalid('price')" class="mt-1 text-xs text-gray-700 dark:text-gray-300">
+            Price is required and must be greater than 0
+          </div>
+        </div>
+        
+        <!-- Stock -->
+        <div>
+          <label for="stock" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Stock <span class="text-gray-700 dark:text-gray-300">*</span></label>
+          <input 
+            type="number" 
+            id="stock" 
+            formControlName="stock"
+            class="w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white"
+            [ngClass]="{'border-red-500 dark:border-red-500': isFieldInvalid('stock')}"
+            min="0"
+            step="1"
+          >
+          <div *ngIf="isFieldInvalid('stock')" class="mt-1 text-xs text-gray-700 dark:text-gray-300">
+            Stock is required and must be a non-negative integer
+          </div>
+        </div>
+
+        <!-- Image URL -->
+        <div>
+          <label for="imageUrl" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Image URL</label>
+          <input 
+            type="text" 
+            id="imageUrl" 
+            placeholder="Image URL"
+            formControlName="imageUrl"
+            class="w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white"
+          >
+        </div>
+        
+        <!-- Description with integrated AI Generator -->
+        <div class="md:col-span-2">
+          <div class="flex justify-between items-center mb-1">
+            <label for="description" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Description <span class="text-gray-700 dark:text-gray-300">*</span></label>
+            
+            <!-- AI Generation Button -->
+            <button 
+              type="button"
+              [disabled]="isGeneratingDescription"
+              (click)="generateDescriptionWithAI()"
+              class="inline-flex items-center px-4 py-2 text-xs uppercase tracking-wide font-medium bg-white dark:bg-gray-900 border border-gray-900 dark:border-gray-100 text-gray-900 dark:text-white hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span *ngIf="isGeneratingDescription" class="inline-flex items-center">
+                <svg class="animate-spin h-4 w-4 mr-2 text-gray-900 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Generating...
+              </span>
+              <span *ngIf="!isGeneratingDescription" class="flex items-center">
+                <lucide-icon name="Bot" class="mr-2 h-4 w-4"></lucide-icon>
+                Generate using AI
+              </span>
+            </button>
+          </div>
+          
+          <!-- AI Helper Text -->
+          <div class="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-500 dark:text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            Enter a few words about your product or leave blank, our AI will generate the description
+          </div>
+          
+          <textarea 
+            id="description" 
+            formControlName="description"
+            rows="4"
+            placeholder="Enter product features or key details, then click 'Generate using AI' - or write your own complete description"
+            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white"
+            [ngClass]="{'border-red-500 dark:border-red-500': isFieldInvalid('description')}"
+          ></textarea>
+          
+          <div *ngIf="isFieldInvalid('description')" class="mt-1 text-xs text-gray-700 dark:text-gray-300">
+            Description is required
+          </div>
+        </div>
+      </div>
+      
+      <!-- Image Preview -->
+      <div *ngIf="productForm.get('imageUrl')?.value" class="mt-6">
+        <p class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-2">Image Preview</p>
+        <div class="w-48 h-48 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <img [src]="productForm.get('imageUrl')?.value" alt="Product Preview" class="w-full h-full object-cover">
+        </div>
+      </div>
+      
+      <!-- Form Actions -->
+      <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+        <button 
+          type="button" 
+          (click)="goBack()"
+          class="px-5 py-2.5 text-xs uppercase tracking-wide font-medium border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white transition-colors"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          [disabled]="productForm.invalid || isSubmitting"
+          class="px-5 py-2.5 text-xs uppercase tracking-wide font-medium bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-gray-900 dark:border-white hover:bg-black dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span *ngIf="isSubmitting" class="inline-flex items-center">
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white dark:text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ isNewProduct ? 'Adding Product...' : 'Saving Changes...' }}
+          </span>
+          <span *ngIf="!isSubmitting">{{ isNewProduct ? 'Add Product' : 'Save Changes' }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</app-admin-layout>

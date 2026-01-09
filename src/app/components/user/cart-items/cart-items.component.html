@@ -1,0 +1,184 @@
+<!-- Navigation Bar -->
+<app-navbar></app-navbar>
+
+<div class="bg-white dark:bg-gray-900 min-h-screen py-12">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header with minimalist design -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 border-b border-gray-200 dark:border-gray-800 pb-8">
+      <div>
+        <h1 class="text-2xl font-light uppercase tracking-wide text-gray-900 dark:text-white mb-2">Shopping Bag</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400" *ngIf="!isLoading && cartItems.length > 0">
+          {{ cartItems.length }} {{ cartItems.length === 1 ? 'item' : 'items' }}
+        </p>
+      </div>
+      <a routerLink="/products" class="mt-3 sm:mt-0 flex items-center text-sm text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors uppercase tracking-wide">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+        </svg>
+        Continue Shopping
+      </a>
+    </div>
+
+    <!-- Loading State - Minimal -->
+    <div *ngIf="isLoading" class="flex justify-center py-16">
+      <div class="w-16 h-16 border-t-2 border-gray-900 dark:border-gray-100 rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Cart Content -->
+    <div *ngIf="!isLoading">
+      <!-- Empty Cart Message - Clean Design -->
+      <div *ngIf="cartItems.length === 0" class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-12 text-center max-w-xl mx-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-6 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+        <h2 class="text-xl font-light uppercase tracking-wide text-gray-900 dark:text-white mb-4">Your bag is empty</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto">You haven't added any products to your bag yet.</p>
+        <button routerLink="/products" class="inline-flex items-center justify-center px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs uppercase tracking-wide font-medium hover:bg-black dark:hover:bg-gray-100 transition-colors">
+          Browse Products
+        </button>
+      </div>
+
+      <!-- Cart With Items -->
+      <div *ngIf="cartItems.length > 0" class="flex flex-col lg:flex-row gap-10">
+        <!-- Cart Items Section -->
+        <div class="lg:w-2/3">
+          <!-- Cart Header - Minimalist -->
+          <div class="hidden md:flex py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
+            <div class="w-2/5">Product</div>
+            <div class="w-1/5 text-center">Price</div>
+            <div class="w-1/5 text-center">Quantity</div>
+            <div class="w-1/5 text-center">Total</div>
+          </div>
+
+          <!-- Cart Items - Clean Design -->
+          <div *ngFor="let item of cartItems; let i = index" [ngClass]="{'border-t border-gray-200 dark:border-gray-800': i > 0}" class="py-8">
+            <div class="flex flex-col md:flex-row md:items-center">
+              <!-- Product Info -->
+              <div class="md:w-2/5 flex items-center">
+                <div class="h-24 w-24 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 cursor-pointer" (click)="viewProductDetails(item.product.id)">
+                  <img [src]="item.product.imageUrl || placeholderProduct" [alt]="item.productName" class="h-full w-full object-cover object-center">
+                </div>
+                <div class="ml-4 flex flex-1 flex-col">
+                  <div>
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ item.productName }}</h3>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">SKU: {{ item.productId }}</p>
+                  </div>
+                  <!-- Mobile Only Price -->
+                  <div class="md:hidden mt-4 flex justify-between">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ getFormattedPrice(item.totalPrice) }}</p>
+                    <button (click)="removeItem(item.cartId)" class="cursor-pointer text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Price - Desktop -->
+              <div class="hidden md:block md:w-1/5 text-center">
+                <span class="text-sm text-gray-900 dark:text-white">{{ getFormattedPrice(item.price) }}</span>
+              </div>
+
+              <!-- Quantity Selector - Minimal -->
+              <div class="mt-4 md:mt-0 md:w-1/5 flex justify-center">
+                <div class="flex items-center border border-gray-300 dark:border-gray-700">
+                  <button 
+                    (click)="updateQuantity(item, -1)" 
+                    class="px-3 py-1 cursor-pointer text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    −
+                  </button>
+                  <span class="px-3 py-1 text-gray-800 dark:text-gray-200 w-8 text-center text-sm">{{ item.quantity }}</span>
+                  <button 
+                    (click)="updateQuantity(item, 1)" 
+                    class="px-3 cursor-pointer py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <!-- Subtotal & Remove Button -->
+              <div class="mt-4 md:mt-0 md:w-1/5 flex flex-col md:items-center">
+                <span class="text-sm text-gray-900 dark:text-white">{{ getFormattedPrice(item.subtotal!) }}</span>
+                <button 
+                  (click)="removeItem(item.cartId)" 
+                  class="cursor-pointer hidden md:inline-block mt-2 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary Section - Clean Design -->
+        <div class="lg:w-1/3">
+          <div class="border border-gray-200 dark:border-gray-800 p-6 sticky top-8">
+            <h2 class="text-lg font-light uppercase tracking-wide text-gray-900 dark:text-white mb-6">Order Summary</h2>
+            
+            <div class="flex justify-between mb-4">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Subtotal</p>
+              <p class="text-sm text-gray-900 dark:text-white">{{ getFormattedPrice(cartTotal) }}</p>
+            </div>
+            
+            <div class="flex justify-between mb-4">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Shipping</p>
+              <p class="text-sm text-gray-900 dark:text-white">{{ getFormattedPrice(shippingCost) }}</p>
+            </div>
+            
+            <!-- Discount Section - Minimal -->
+            <div *ngIf="discountApplied" class="flex justify-between mb-4">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Discount</p>
+              <p class="text-sm text-green-500 dark:text-white">-{{ getFormattedPrice(discountAmount) }}</p>
+            </div>
+            
+            <!-- Promo Code Input - Minimal -->
+            <div *ngIf="!discountApplied" class="mt-6 mb-6">
+              <div class="flex space-x-2">
+                <input 
+                  type="text" 
+                  [(ngModel)]="discountCode"
+                  placeholder="Promo code" 
+                  class="flex-grow border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-gray-500 dark:focus:border-gray-500"
+                >
+                <button 
+                  (click)="applyDiscount()" 
+                  class="cursor-pointer bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-2 text-xs uppercase tracking-wide font-medium hover:bg-black dark:hover:bg-gray-100 transition-colors"
+                >
+                  Apply
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Try "SAVE10" for 10% off</p>
+            </div>
+            
+            <div class="border-t border-gray-200 dark:border-gray-800 my-6"></div>
+            
+            <div class="flex justify-between mb-8">
+              <p class="text-sm font-medium uppercase tracking-wide text-gray-900 dark:text-white">Total</p>
+              <div class="text-right">
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ getFormattedPrice(cartTotal + shippingCost - discountAmount) }}</p>
+              </div>
+            </div>
+            
+            <button 
+              (click)="processCheckout()" 
+              class="cursor-pointer w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs uppercase tracking-wide font-medium hover:bg-black dark:hover:bg-gray-100 transition-colors flex items-center justify-center"
+              [disabled]="processingOrder">
+              <span *ngIf="!processingOrder">Proceed to Payment</span>
+              <div *ngIf="processingOrder" class="flex items-center">
+                <div class="animate-spin rounded-full h-4 w-4 border-2 border-white dark:border-gray-900 border-t-transparent mr-2"></div>
+                Processing...
+              </div>
+            </button>
+            
+            <div class="mt-6 flex items-center justify-center">
+              <div class="flex items-center gap-6">
+                <img src="https://cdn.razorpay.com/static/assets/merchant-badge/badge-dark.png" alt="Razorpay" class="h-5 opacity-75">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

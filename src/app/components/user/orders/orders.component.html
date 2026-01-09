@@ -1,0 +1,381 @@
+<!-- Navigation Bar -->
+<app-navbar></app-navbar>
+
+<div class="bg-white dark:bg-gray-900 min-h-screen py-12">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-12 border-b border-gray-200 dark:border-gray-800 pb-8">
+      <div>
+        <h1 class="text-2xl font-light uppercase tracking-wide text-gray-900 dark:text-white">My Orders</h1>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Track and manage your recent purchases</p>
+      </div>
+      <a routerLink="/products"
+        class="mt-4 md:mt-0 inline-flex items-center px-5 py-2.5 text-xs uppercase tracking-wide font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-900 border border-gray-900 dark:border-gray-100 hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        Continue Shopping
+      </a>
+    </div>
+
+    <!-- Loading State - Minimal -->
+    <div *ngIf="isLoading" class="flex justify-center py-16">
+      <div class="w-16 h-16 border-t-2 border-gray-900 dark:border-gray-100 rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Success Message - Clean -->
+    <div *ngIf="successMessage" class="border border-gray-200 dark:border-gray-800 p-4 mb-8 bg-gray-50 dark:bg-gray-800">
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7" />
+        </svg>
+        <p class="text-sm text-gray-600 dark:text-gray-300">{{ successMessage }}</p>
+      </div>
+    </div>
+
+    <!-- Error Message - Clean -->
+    <div *ngIf="errorMessage" class="border border-gray-200 dark:border-gray-800 p-4 mb-8 bg-gray-50 dark:bg-gray-800">
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        <p class="text-sm text-gray-600 dark:text-gray-300">{{ errorMessage }}</p>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && orders.length === 0 && !errorMessage"
+      class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-12 text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-6 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+      </svg>
+      <h2 class="text-xl font-light uppercase tracking-wide text-gray-900 dark:text-white mb-4">Your order history is empty</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">Looks like you haven't placed any orders with us yet. Discover our products and start shopping today.</p>
+      <button routerLink="/products"
+        class="inline-flex items-center px-5 py-2.5 text-xs uppercase tracking-wide font-medium bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-gray-900 dark:border-white hover:bg-black dark:hover:bg-gray-100 transition-colors">
+        Explore Products
+      </button>
+    </div>
+
+    <div *ngIf="!isLoading && orders.length > 0" class="space-y-8">
+      <div *ngFor="let order of orders"
+        class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-all duration-300">
+        <!-- Order Header -->
+        <div class="p-6 cursor-pointer" (click)="toggleOrderDetails(order.orderId)">
+          <div class="flex flex-col lg:flex-row lg:items-center">
+            <div class="flex-1">
+              <div class="flex items-center mb-2">
+                <span class="inline-flex items-center px-3 py-1 text-xs uppercase tracking-wide" [ngClass]="{
+                        'text-green-700 dark:text-green-400': order.status === 'DELIVERED',
+                        'text-blue-700 dark:text-blue-400': order.status === 'SHIPPED',
+                        'text-yellow-700 dark:text-yellow-400': order.status === 'PROCESSING',
+                        'text-purple-700 dark:text-purple-400': order.status === 'CONFIRMED',
+                        'text-red-700 dark:text-red-400': order.status === 'CANCELLED',
+                        'text-gray-700 dark:text-gray-400': !order.status || order.status === 'ORDERED'
+                      }">
+                  <span *ngIf="order.status === 'DELIVERED'" class="mr-1.5 h-1.5 w-1.5 rounded-full bg-green-500 dark:bg-green-400 inline-block"></span>
+                  <span *ngIf="order.status === 'SHIPPED'" class="mr-1.5 h-1.5 w-1.5 rounded-full bg-blue-500 dark:bg-blue-400 inline-block"></span>
+                  <span *ngIf="order.status === 'PROCESSING'" class="mr-1.5 h-1.5 w-1.5 rounded-full bg-yellow-500 dark:bg-yellow-400 inline-block"></span>
+                  {{ order.status || 'Ordered' }}
+                </span>
+                <span class="ml-3 text-xs text-gray-500 dark:text-gray-400">{{ getFormattedDate(order.orderDate) }}</span>
+              </div>
+              <div class="flex items-center">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white">Order #{{ order.orderId }}</h3>
+                <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">({{ order.items.length }} {{ order.items.length === 1 ? 'item'
+                  : 'items' }})</span>
+              </div>
+            </div>
+
+            <div class="mt-4 lg:mt-0 flex flex-col lg:flex-row lg:items-center lg:space-x-6">
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-2" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span class="text-sm text-gray-900 dark:text-white">{{ getFormattedPrice(calculateTotal(order.items[0]))  }}</span>
+              </div>
+
+              <button
+                class="flex items-center mt-3 lg:mt-0 text-xs uppercase tracking-wide text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
+                <span>View Details</span>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                  [class]="expandedOrderId === order.orderId ? 'transform rotate-180 ml-1 h-4 w-4' : 'ml-1 h-4 w-4'"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Details (Expandable) -->
+        <div *ngIf="expandedOrderId === order.orderId" class="border-t border-gray-200 dark:border-gray-800 animate-fadeIn">
+          <!-- Progress Tracker - Clean Design -->
+          <div class="px-6 py-6 bg-gray-50 dark:bg-gray-800/50" *ngIf="order.status != 'CANCELLED'">
+            <div class="flex items-center justify-between max-w-3xl mx-auto">
+              <div class="flex flex-col items-center">
+                <div class="w-7 h-7 rounded-full flex items-center justify-center text-white dark:text-gray-900"
+                  [ngClass]="{'bg-gray-900 dark:bg-white': true}">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span class="mt-2 text-xs uppercase tracking-wide text-gray-900 dark:text-white">Ordered</span>
+              </div>
+              <div class="flex-1 mx-2">
+                <div class="h-px w-full bg-gray-900 dark:bg-white"></div>
+              </div>
+              <div class="flex flex-col items-center">
+                <div
+                  [ngClass]="order.status === 'PROCESSING' || order.status === 'SHIPPED' || order.status === 'DELIVERED' ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'"
+                  class="w-7 h-7 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                </div>
+                <span class="mt-2 text-xs uppercase tracking-wide text-gray-900 dark:text-white">Processing</span>
+              </div>
+              <div class="flex-1 mx-2">
+                <div
+                  [ngClass]="order.status === 'SHIPPED' || order.status === 'DELIVERED' ? 'bg-gray-900 dark:bg-white' : 'bg-gray-200 dark:bg-gray-700'"
+                  class="h-px w-full"></div>
+              </div>
+              <div class="flex flex-col items-center">
+                <div
+                  [ngClass]="order.status === 'SHIPPED' || order.status === 'DELIVERED' ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'"
+                  class="w-7 h-7 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                  </svg>
+                </div>
+                <span class="mt-2 text-xs uppercase tracking-wide text-gray-900 dark:text-white">Shipped</span>
+              </div>
+              <div class="flex-1 mx-2">
+                <div [ngClass]="order.status === 'DELIVERED' ? 'bg-gray-900 dark:bg-white' : 'bg-gray-200 dark:bg-gray-700'" class="h-px w-full">
+                </div>
+              </div>
+              <div class="flex flex-col items-center">
+                <div [ngClass]="order.status === 'DELIVERED' ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900' : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'"
+                  class="w-7 h-7 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </div>
+                <span class="mt-2 text-xs uppercase tracking-wide text-gray-900 dark:text-white">Delivered</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+            <!-- Order Items Section - Clean Design -->
+            <div class="lg:col-span-2">
+              <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+                <div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800">
+                  <h4 class="text-xs uppercase tracking-wide font-medium text-gray-900 dark:text-white">Order Items</h4>
+                </div>
+                <div class="divide-y divide-gray-200 dark:divide-gray-800">
+                  <div *ngFor="let item of order.items" class="p-4">
+                    <div class="flex items-start">
+                      <div class="h-12 w-12 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-500 mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                          <div>
+                            <h5 class="text-sm font-medium text-gray-900 dark:text-white">{{ item.product?.name || item.productName }}
+                            </h5>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Quantity: {{ item.quantity }}</p>
+                          </div>
+                          <div class="text-right">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">{{ getFormattedPrice((item.product?.price ||
+                              item.price) * item.quantity) }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ getFormattedPrice(item.product?.price ||
+                              item.price) }} per unit</p>
+                          </div>
+                        </div>
+
+                        <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                          <div class="flex items-center mt-1">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Status:</span>
+                            <span class="ml-2 text-xs font-medium uppercase tracking-wide"
+                              [ngClass]="{
+                                  'text-green-700 dark:text-green-400': item.orderStatus === 'DELIVERED',
+                                  'text-blue-700 dark:text-blue-400': item.orderStatus === 'SHIPPED',
+                                  'text-yellow-700 dark:text-yellow-400': item.orderStatus === 'PROCESSING',
+                                  'text-red-700 dark:text-red-400': item.orderStatus === 'CANCELLED',
+                                  'text-gray-700 dark:text-gray-400': !item.orderStatus
+                                }">
+                              {{ item.orderStatus || 'Processing' }}
+                            </span>
+                          </div>
+
+                          <div *ngIf="item.discount > 0" class="flex items-center mt-1">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Discount:</span>
+                            <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">{{ getFormattedPrice(item.discount) }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Order Summary Section - Clean Design -->
+            <div>
+              <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+                <div class="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800">
+                  <h4 class="text-xs uppercase tracking-wide font-medium text-gray-900 dark:text-white">Order Summary</h4>
+                </div>
+                <div class="p-4">
+                  <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                      <span class="text-gray-500 dark:text-gray-400">Subtotal:</span>
+                      <span class="text-gray-900 dark:text-white">{{ getFormattedPrice(order.items[0].subtotal) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-500 dark:text-gray-400">Shipping:</span>
+                      <span class="text-gray-900 dark:text-white">{{ getFormattedPrice(order.items[0].shipping) }}</span>
+                    </div>
+                    <div *ngIf="order.items[0].discount > 0" class="flex justify-between">
+                      <span class="text-gray-500 dark:text-gray-400">Discount:</span>
+                      <span class="text-gray-900 dark:text-white">-{{ getFormattedPrice(order.items[0].discount) }}</span>
+                    </div>
+                    <div class="pt-3 border-t border-gray-200 dark:border-gray-800 flex justify-between">
+                      <span class="font-medium text-gray-900 dark:text-white">Total:</span>
+                      <span class="font-medium text-gray-900 dark:text-white">{{ getFormattedPrice(calculateTotal(order.items[0])) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="mt-5 pt-4 border-t border-gray-200 dark:border-gray-800">
+                    <h5 class="text-xs uppercase tracking-wide font-medium text-gray-900 dark:text-white mb-3">Payment Information</h5>
+                    <div class="space-y-2 text-xs">
+                      <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500 mr-2" fill="none"
+                          viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-400">Method: {{ order.paymentMethod || 'Not specified' }}</span>
+                      </div>
+                      <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500 mr-2" fill="none"
+                          viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-400">Status:
+                          <span class="text-green-600 dark:green-600">{{ order.items[0].paymentStatus || 'Not specified' }}</span>
+                        </span>
+                      </div>
+                      <div *ngIf="order.items[0].paymentId" class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500 mr-2" fill="none"
+                          viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-400">Payment ID: {{ order.items[0].paymentId }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-5 pt-4 border-t border-gray-200 dark:border-gray-800">
+                    <h5 class="text-xs uppercase tracking-wide font-medium text-gray-900 dark:text-white mb-3">Shipping Address</h5>
+                    <p class="text-xs text-gray-600 dark:text-gray-400">{{ user.address || 'Address not provided' }}</p>
+                  </div>
+
+                  <div class="mt-6">
+                    <button (click)="downloadInvoice(order)"
+                      class="w-full flex items-center justify-center px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs uppercase tracking-wide font-medium hover:bg-black dark:hover:bg-gray-100 transition-colors"
+                      title="Download Invoice">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                      </svg>
+                      Download Invoice
+                    </button>
+                    <div class="mt-4">
+
+                      <button *ngIf="order.status === 'PROCESSING'" (click)="cancelOrder(order.orderId)"
+                        [disabled]="isCancelling === order.orderId"
+                        class="w-full flex items-center justify-center px-4 py-2.5 border border-gray-900 dark:border-gray-100 text-gray-900 dark:text-white text-xs uppercase tracking-wide font-medium hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-white"
+                        title="Cancel Order">
+                        <svg *ngIf="isCancelling !== order.orderId" xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        <svg *ngIf="isCancelling === order.orderId" class="animate-spin h-4 w-4 mr-2"
+                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                          </circle>
+                          <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                          </path>
+                        </svg>
+                        {{ isCancelling === order.orderId ? 'Cancelling...' : 'Cancel Order' }}
+                      </button>
+
+                      <div *ngIf="order.status !== 'PROCESSING' && order.status !== 'CANCELLED'"
+                        class="mt-4 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 pt-4 italic text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 text-gray-500 dark:text-gray-400"
+                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Orders cannot be cancelled once they are shipped.
+                      </div>
+                    </div>
+                      
+                    <div *ngIf="order.status === 'CANCELLED'"
+                        class="mt-4 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 pt-4 italic text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1 text-gray-500 dark:text-gray-400"
+                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Payment done will be reversed within 48 hours.
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+</style>

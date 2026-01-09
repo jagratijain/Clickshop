@@ -1,0 +1,303 @@
+<!-- Navigation Bar -->
+<app-navbar></app-navbar>
+
+<div class="bg-white dark:bg-gray-900 min-h-screen py-12">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header Section - Clean Minimal -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6 border-b border-gray-200 dark:border-gray-800 pb-8">
+      <div>
+        <h1 class="text-2xl font-light uppercase tracking-wide text-gray-900 dark:text-white">My Account</h1>
+        <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">Manage your personal information and security settings</p>
+      </div>
+      <div *ngIf="!isEditing && !isLoading && user">
+        <button 
+          (click)="toggleEditMode()" 
+          class="flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-2.5 px-5 text-xs uppercase tracking-wide font-medium hover:bg-black dark:hover:bg-gray-100 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          <span>Edit Profile</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State - Minimal -->
+    <div *ngIf="isLoading" class="flex justify-center py-16">
+      <div class="w-16 h-16 border-t-2 border-gray-900 dark:border-gray-100 rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Error Message - Clean -->
+    <div *ngIf="errorMessage" class="mb-8 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 px-6 py-4 flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3 flex-shrink-0 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="text-sm text-gray-600 dark:text-gray-300">{{ errorMessage }}</span>
+    </div>
+
+    <!-- Success Message - Clean -->
+    <div *ngIf="successMessage" class="mb-8 border border-green-400 dark:border-green-400 bg-white dark:bg-gray-800 px-6 py-4 flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3 flex-shrink-0 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7" />
+      </svg>
+      <span class="text-sm text-green-400 dark:text-green-400">{{ successMessage }}</span>
+    </div>
+
+    <!-- Profile Content -->
+    <div *ngIf="!isLoading && !errorMessage && user" class="space-y-10">
+      <!-- Profile Card - Clean Design -->
+      <div class="border-b border-gray-200 dark:border-gray-800 pb-8">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-8">
+          <div class="flex-shrink-0">
+            <div class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-full h-24 w-24 flex items-center justify-center text-3xl font-light">
+              {{ user.name?.charAt(0)?.toUpperCase() }}
+            </div>
+          </div>
+          <div class="text-center sm:text-left">
+            <h2 class="text-xl font-medium text-gray-900 dark:text-white">{{ user.name }}</h2>
+            <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">{{ user.email }}</p>
+            <p *ngIf="user.phone" class="flex items-center justify-center sm:justify-start gap-2 text-gray-500 dark:text-gray-400 mt-2 text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              {{ user.phone }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Information - View Mode -->
+      <div *ngIf="!isEditing">
+        <h3 class="text-lg font-light uppercase tracking-wide text-gray-900 dark:text-white mb-6">Personal Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Name</label>
+            <div class="text-gray-900 dark:text-white text-sm">{{ user.name || 'Not provided' }}</div>
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Username</label>
+            <div class="text-gray-900 dark:text-white text-sm">{{ user.username || 'Not provided' }}</div>
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Email Address</label>
+            <div class="text-gray-900 dark:text-white text-sm">{{ user.email }}</div>
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Phone Number</label>
+            <div class="text-gray-900 dark:text-white text-sm">{{ user.phone || 'Not provided' }}</div>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Address</label>
+            <div class="text-gray-900 dark:text-white text-sm whitespace-pre-line">{{ user.address || 'Not provided' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Information - Edit Mode -->
+      <div *ngIf="isEditing">
+        <h3 class="text-lg font-light uppercase tracking-wide text-gray-900 dark:text-white mb-6">Edit Profile</h3>
+        <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()">
+          <!-- Profile update error/success messages -->
+          <div *ngIf="profileError" class="mb-6 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 px-6 py-4">
+            <span class="text-sm text-gray-600 dark:text-gray-300">{{ profileError }}</span>
+          </div>
+          <div *ngIf="profileSuccess" class="mb-6 border border-green-400 dark:border-green-400 bg-white dark:bg-gray-800 px-6 py-4">
+            <span class="text-sm text-green-400 dark:text-green-400">{{ profileSuccess }}</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="name" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Name</label>
+              <input
+                type="text"
+                id="name"
+                formControlName="name"
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:outline-none focus:border-gray-500 dark:focus:border-gray-500 dark:text-white text-sm"
+                placeholder="Enter your full name"
+              />
+            </div>
+            <div>
+              <label for="username" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Username</label>
+              <input
+                type="text"
+                id="username"
+                formControlName="username"
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:outline-none focus:border-gray-500 dark:focus:border-gray-500 dark:text-white text-sm"
+                placeholder="Enter your username"
+              />
+            </div>
+            <div>
+              <label for="email" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:outline-none focus:border-gray-500 dark:focus:border-gray-500 dark:text-white text-sm"
+                placeholder="Enter your email address"
+              />
+              <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Please enter a valid email address
+              </div>
+            </div>
+            <div>
+              <label for="phone" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Phone Number</label>
+              <input
+                type="tel"
+                id="phone"
+                formControlName="phone"
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:outline-none focus:border-gray-500 dark:focus:border-gray-500 dark:text-white text-sm"
+                placeholder="Enter your phone number"
+              />
+            </div>
+            <div class="md:col-span-2">
+              <label for="address" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Address</label>
+              <textarea
+                id="address"
+                formControlName="address"
+                rows="3"
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:outline-none focus:border-gray-500 dark:focus:border-gray-500 dark:text-white text-sm"
+                placeholder="Enter your address"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
+            <button
+              type="button"
+              (click)="toggleEditMode()"
+              class="px-5 py-2.5 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-xs uppercase tracking-wide font-medium transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="profileForm.invalid || isSubmitting"
+              class="px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs uppercase tracking-wide font-medium hover:bg-black dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              <span *ngIf="isSubmitting" class="inline-block mr-2">
+                <svg class="animate-spin h-4 w-4 text-white dark:text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </span>
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Security Section -->
+      <div class="border-t border-gray-200 dark:border-gray-800 pt-10">
+        <h3 class="text-lg font-light uppercase tracking-wide text-gray-900 dark:text-white mb-6">Security</h3>
+        <div>
+          <div *ngIf="!showPasswordForm">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h4 class="text-sm font-medium text-gray-900 dark:text-white">Password</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Update your password to keep your account secure</p>
+              </div>
+              <button 
+                type="button" 
+                (click)="togglePasswordForm()" 
+                class="flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-2.5 px-5 text-xs uppercase tracking-wide font-medium hover:bg-black dark:hover:bg-gray-100 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span>Change Password</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Password Form -->
+          <div *ngIf="showPasswordForm" class="mt-6">
+            <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+              <!-- Error Message -->
+              <div *ngIf="passwordError" class="mb-6 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 px-6 py-4">
+                <span class="text-sm text-gray-600 dark:text-gray-300">{{ passwordError }}</span>
+              </div>
+
+              <!-- Success Message -->
+              <div *ngIf="passwordSuccess" class="mb-6 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 px-6 py-4">
+                <span class="text-sm text-gray-600 dark:text-gray-300">{{ passwordSuccess }}</span>
+              </div>
+
+              <div class="space-y-6">
+                <div>
+                  <label for="oldPassword" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Current Password</label>
+                  <input 
+                    type="password" 
+                    id="oldPassword" 
+                    formControlName="oldPassword"
+                    class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:outline-none focus:border-gray-500 dark:focus:border-gray-500 dark:text-white text-sm" 
+                    placeholder="Enter your current password" 
+                  />
+                  <div *ngIf="passwordForm.get('oldPassword')?.touched && passwordForm.get('oldPassword')?.invalid" class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Current password is required
+                  </div>
+                </div>
+
+                <div>
+                  <label for="newPassword" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">New Password</label>
+                  <input 
+                    type="password" 
+                    id="newPassword" 
+                    formControlName="newPassword"
+                    class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:outline-none focus:border-gray-500 dark:focus:border-gray-500 dark:text-white text-sm" 
+                    placeholder="Enter your new password" 
+                  />
+                  <div *ngIf="passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.errors?.['required']" class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    New password is required
+                  </div>
+                  <div *ngIf="passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.errors?.['minlength']" class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Password must be at least 6 characters
+                  </div>
+                </div>
+
+                <div>
+                  <label for="confirmPassword" class="block text-xs uppercase tracking-wider font-medium text-gray-500 dark:text-gray-400 mb-2">Confirm New Password</label>
+                  <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    formControlName="confirmPassword"
+                    class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:outline-none focus:border-gray-500 dark:focus:border-gray-500 dark:text-white text-sm" 
+                    placeholder="Confirm your new password" 
+                  />
+                  <div *ngIf="passwordForm.get('confirmPassword')?.touched && passwordForm.get('confirmPassword')?.errors?.['required']" class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Confirm your new password
+                  </div>
+                  <div *ngIf="passwordForm.errors?.['notMatching'] && passwordForm.get('confirmPassword')?.touched" class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Passwords do not match
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
+                <button 
+                  type="button" 
+                  (click)="togglePasswordForm()" 
+                  class="px-5 py-2.5 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-xs uppercase tracking-wide font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  [disabled]="passwordForm.invalid || isChangingPassword"
+                  class="px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs uppercase tracking-wide font-medium hover:bg-black dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  <span *ngIf="isChangingPassword" class="inline-block mr-2">
+                    <svg class="animate-spin h-4 w-4 text-white dark:text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  </span>
+                  Change Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,349 @@
+<div class="min-h-screen bg-white dark:bg-gray-900 p-0 md:py-12 md:px-4 flex items-center justify-center">
+  <div class="max-w-5xl w-full">
+    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden flex flex-col md:flex-row">
+      <!-- Left side - Creative Information section -->
+      <div class="bg-white dark:bg-gray-900 md:w-2/5 p-0 text-gray-900 dark:text-white flex flex-col justify-between relative overflow-hidden">
+        <!-- Abstract creative shapes -->
+        <div class="absolute inset-0 overflow-hidden">
+          <div class="absolute -left-20 -top-20 w-40 h-40 border border-gray-200 dark:border-gray-800 rotate-45"></div>
+          <div class="absolute -right-20 bottom-40 w-80 h-80 border border-gray-200 dark:border-gray-800 rounded-full opacity-30"></div>
+          <div class="absolute left-10 top-1/3 w-20 h-20 border border-gray-300 dark:border-gray-700"></div>
+          <div class="absolute right-10 top-2/3 w-10 h-10 bg-gray-100 dark:bg-gray-800"></div>
+          <div class="absolute bottom-19 left-12 w-39 h-1 bg-gray-900 dark:bg-white"></div>
+        </div>
+
+        <!-- Content overlay -->
+        <div class="relative z-10 flex flex-col h-full p-8 md:p-12">
+          <div class="mb-6">
+            <div class="inline-block border-b-2 border-gray-900 dark:border-white mb-2">
+              <span class="text-gray-900 dark:text-white text-xl font-bold tracking-tight uppercase">ClickShop</span>
+            </div>
+            <h1 class="text-xl font-light uppercase tracking-wide text-gray-900 dark:text-white mb-4">Join Our Community</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-xs">Create your account and start shopping your favorite items with exclusive deals!</p>
+          </div>
+          
+          <!-- Steps visualization - creative approach -->
+          <div class="mt-4 mb-8 flex-grow">
+            <div class="relative">
+              <!-- Step line -->
+              <div class="absolute left-3 top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-800"></div>
+              
+              <!-- Steps -->
+              <div class="space-y-8">
+                <!-- Step 1 -->
+                <div class="flex items-start">
+                  <div [ngClass]="{'bg-gray-900 dark:bg-white text-white dark:text-gray-900': currentStep >= 1, 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400': currentStep < 1}" 
+                       class="relative z-10 w-6 h-6 flex items-center justify-center mr-4">
+                    <span *ngIf="currentStep > 1">✓</span>
+                    <span *ngIf="currentStep <= 1">1</span>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-wide font-medium" 
+                       [ngClass]="{'text-gray-900 dark:text-white': currentStep >= 1, 'text-gray-500 dark:text-gray-400': currentStep < 1}">
+                      Account Details
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" *ngIf="currentStep === 1">
+                      Your basic information
+                    </p>
+                  </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="flex items-start">
+                  <div [ngClass]="{'bg-gray-900 dark:bg-white text-white dark:text-gray-900': currentStep >= 2, 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400': currentStep < 2}" 
+                       class="relative z-10 w-6 h-6 flex items-center justify-center mr-4">
+                    <span *ngIf="currentStep > 2">✓</span>
+                    <span *ngIf="currentStep <= 2">2</span>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-wide font-medium" 
+                       [ngClass]="{'text-gray-900 dark:text-white': currentStep >= 2, 'text-gray-500 dark:text-gray-400': currentStep < 2}">
+                      Verification
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" *ngIf="currentStep === 2">
+                      Verify your email
+                    </p>
+                  </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="flex items-start">
+                  <div [ngClass]="{'bg-gray-900 dark:bg-white text-white dark:text-gray-900': currentStep >= 3, 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400': currentStep < 3}" 
+                       class="relative z-10 w-6 h-6 flex items-center justify-center mr-4">
+                    <span *ngIf="currentStep > 3">✓</span>
+                    <span *ngIf="currentStep <= 3">3</span>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-wide font-medium" 
+                       [ngClass]="{'text-gray-900 dark:text-white': currentStep >= 3, 'text-gray-500 dark:text-gray-400': currentStep < 3}">
+                      Security
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" *ngIf="currentStep === 3">
+                      Create a secure password
+                    </p>
+                  </div>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="flex items-start">
+                  <div [ngClass]="{'bg-gray-900 dark:bg-white text-white dark:text-gray-900': currentStep >= 4, 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400': currentStep < 4}" 
+                       class="relative z-10 w-6 h-6 flex items-center justify-center mr-4">
+                    <span *ngIf="currentStep > 4">✓</span>
+                    <span *ngIf="currentStep <= 4">4</span>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-wide font-medium" 
+                       [ngClass]="{'text-gray-900 dark:text-white': currentStep >= 4, 'text-gray-500 dark:text-gray-400': currentStep < 4}">
+                      Contact Details
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" *ngIf="currentStep === 4">
+                      Where we can reach you
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Bottom section with sign in link -->
+          <div class="mt-auto relative">
+            <div class="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Already have an account?</p>
+              <a routerLink="/login" class="inline-block mt-2 text-gray-900 dark:text-white hover:text-black dark:hover:text-gray-200 transition-colors font-medium">
+                Sign in →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side - Form content -->
+      <div class="md:w-3/5 p-8 md:p-12 border-l border-gray-200 dark:border-gray-800">
+        <div class="flex justify-between items-center mb-8">
+          <h2 class="text-xl font-light uppercase tracking-wide text-gray-900 dark:text-white relative">
+            Create Account
+            <!-- Creative decorative line -->
+            <span class="absolute -bottom-2 left-0 w-8 h-0.5 bg-gray-900 dark:bg-white"></span>
+          </h2>
+          <div class="hidden md:flex items-center">
+            <div class="bg-white dark:bg-gray-900 border border-gray-900 dark:border-gray-100 text-gray-900 dark:text-white px-4 py-2">
+              <span class="text-xs uppercase tracking-wide">Step {{ currentStep }} of {{ totalSteps }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="errorMessage" class="mb-6 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 px-4 py-3 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 flex-shrink-0 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p>{{ errorMessage }}</p>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <!-- Step 1: Account Details -->
+          <div *ngIf="currentStep === 1" class="space-y-5">
+            <div>
+              <label for="name" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Full Name</label>
+              <input type="text" id="name" formControlName="name" 
+                     class="mt-1 block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white"
+                     [ngClass]="{'border-red-500': isFieldInvalid('name'), 'border-green-500': !isFieldInvalid('name') && registerForm.get('name')?.value}">
+              <div *ngIf="isFieldInvalid('name')" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                {{ getFieldError('name') }}
+              </div>
+            </div>
+
+            <div>
+              <label for="email" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Email Address</label>
+              <div class="relative">
+                <input type="email" id="email" formControlName="email" 
+                       class="mt-1 block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white"
+                       [ngClass]="{'border-red-500': isFieldInvalid('email'), 'border-green-500': !isFieldInvalid('email') && registerForm.get('email')?.value && !isFieldPending('email')}">
+                <div *ngIf="isFieldPending('email')" class="absolute right-3 top-5">
+                  <svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div *ngIf="isFieldInvalid('email')" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                {{ getFieldError('email') }}
+              </div>
+            </div>
+
+            <div>
+              <label for="username" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Username</label>
+              <div class="relative">
+                <input type="text" id="username" formControlName="username" 
+                       class="mt-1 block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white"
+                       [ngClass]="{'border-red-500': isFieldInvalid('username'), 'border-green-500': !isFieldInvalid('username') && registerForm.get('username')?.value && !isFieldPending('username')}">
+                <div *ngIf="isFieldPending('username')" class="absolute right-3 top-5">
+                  <svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div *ngIf="isFieldInvalid('username')" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                {{ getFieldError('username') }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Verification -->
+          <div *ngIf="currentStep === 2" class="space-y-5 py-4">
+            <app-otp-input 
+              [email]="registerForm.get('email')?.value" 
+              (otpVerified)="handleOtpVerified($event)"
+              (resendOtp)="handleResendOtp()">
+            </app-otp-input>
+          </div>
+
+          <!-- Step 3: Security/Password -->
+          <div *ngIf="currentStep === 3" class="space-y-5">
+            <div>
+              <label for="password" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Password</label>
+              <div class="mt-1 relative shadow-sm">
+                <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+                       class="block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white">
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" (click)="togglePasswordVisibility()">
+                  <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                  </svg>
+                  <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
+                    <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                  </svg>
+                </div>
+              </div>
+              <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</span>
+                <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters</span>
+                <span *ngIf="registerForm.get('password')?.errors?.['pattern']">Password must include uppercase, lowercase, number and special character</span>
+              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Password must be at least 8 characters and include uppercase, lowercase, number and special character</p>
+            </div>
+
+            <div>
+              <label for="confirmPassword" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Confirm Password</label>
+              <input type="password" id="confirmPassword" formControlName="confirmPassword" 
+                     class="mt-1 block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white">
+              <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</span>
+              </div>
+              <div *ngIf="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                Passwords do not match
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Contact Details -->
+          <div *ngIf="currentStep === 4" class="space-y-5">
+            <div>
+              <label for="contactNumber" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Contact Number</label>
+              <input type="tel" id="contactNumber" formControlName="contactNumber" 
+                     class="mt-1 block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white">
+              <div *ngIf="registerForm.get('contactNumber')?.invalid && registerForm.get('contactNumber')?.touched" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                <span *ngIf="registerForm.get('contactNumber')?.errors?.['required']">Contact number is required</span>
+                <span *ngIf="registerForm.get('contactNumber')?.errors?.['pattern']">Please enter a valid 10-digit phone number</span>
+              </div>
+            </div>
+
+            <div>
+              <label for="addressLine1" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Address Line 1</label>
+              <input type="text" id="addressLine1" formControlName="addressLine1" 
+                     class="mt-1 block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white">
+              <div *ngIf="registerForm.get('addressLine1')?.invalid && registerForm.get('addressLine1')?.touched" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                <span *ngIf="registerForm.get('addressLine1')?.errors?.['required']">Address is required</span>
+              </div>
+            </div>
+
+            <div>
+              <label for="addressLine2" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">Address Line 2 (Optional)</label>
+              <input type="text" id="addressLine2" formControlName="addressLine2" 
+                     class="mt-1 block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="city" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">City</label>
+                <input type="text" id="city" formControlName="city" 
+                       class="mt-1 block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white">
+                <div *ngIf="registerForm.get('city')?.invalid && registerForm.get('city')?.touched" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                  <span *ngIf="registerForm.get('city')?.errors?.['required']">City is required</span>
+                </div>
+              </div>
+
+              <div>
+                <label for="state" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">State</label>
+                <input type="text" id="state" formControlName="state" 
+                       class="mt-1 block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white">
+                <div *ngIf="registerForm.get('state')?.invalid && registerForm.get('state')?.touched" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                  <span *ngIf="registerForm.get('state')?.errors?.['required']">State is required</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label for="zipCode" class="block text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 mb-1">ZIP Code</label>
+              <input type="text" id="zipCode" formControlName="zipCode" 
+                     class="mt-1 block w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 focus:border-gray-900 dark:focus:border-white dark:text-white">
+              <div *ngIf="registerForm.get('zipCode')?.invalid && registerForm.get('zipCode')?.touched" class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                <span *ngIf="registerForm.get('zipCode')?.errors?.['required']">ZIP code is required</span>
+                <span *ngIf="registerForm.get('zipCode')?.errors?.['pattern']">Please enter a valid ZIP code</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="mt-10 flex items-center justify-between">
+            <button *ngIf="currentStep > 1" 
+                    type="button" 
+                    (click)="previousStep()" 
+                    class="px-6 py-2.5 border border-gray-300 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-gray-900 dark:hover:border-white hover:text-gray-900 dark:hover:text-white focus:outline-none transition-colors">
+              Back
+            </button>
+            <div *ngIf="currentStep === 1"></div>
+            
+            <div>
+              <button *ngIf="currentStep < totalSteps" 
+                      type="button" 
+                      (click)="nextStep()" 
+                      
+                      class="px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-gray-900 dark:border-white hover:bg-black dark:hover:bg-gray-100 text-xs uppercase tracking-wide font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                <span *ngIf="isSubmitting" class="inline-flex items-center">
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white dark:text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+                <span *ngIf="!isSubmitting">Create Account</span>
+              </button>
+              <button *ngIf="currentStep === totalSteps" 
+                      type="submit" 
+                      [disabled]="registerForm.invalid || isSubmitting"
+                      class="px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-gray-900 dark:border-white hover:bg-black dark:hover:bg-gray-100 text-xs uppercase tracking-wide font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                <span *ngIf="isSubmitting" class="inline-flex items-center">
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white dark:text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+                <span *ngIf="!isSubmitting">Create Account</span>
+              </button>
+            </div>
+          </div>
+        </form>
+        
+        <!-- Creative form quote footer -->
+        <div class="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
+          <blockquote class="italic text-sm text-gray-500 dark:text-gray-400">
+            "Elegance is not standing out, but being remembered."
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

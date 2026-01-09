@@ -1,0 +1,151 @@
+<app-admin-layout>
+  <div class="p-6 max-w-7xl mx-auto">
+    <h1 class="text-2xl font-light uppercase tracking-wide text-gray-900 dark:text-white mb-6">Admin Reports</h1>
+
+    <!-- Filters -->
+    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-6 mb-6">
+      <div class="flex flex-wrap items-end gap-4">
+        <div class="flex-1 min-w-[160px]">
+          <label for="category" class="block text-xs uppercase tracking-wide font-normal text-gray-500 dark:text-gray-400 mb-1">Report Category</label>
+          <select 
+            id="category"
+            [(ngModel)]="selectedCategory" 
+            (change)="fetchReport()" 
+            [disabled]="reportData.length > 0" 
+            class="w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:outline-none focus:border-gray-900 dark:focus:border-white text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Select report category"
+          >
+            <option value="default">Select</option>
+            <option value="orders">Orders</option>
+            <option value="products">Products</option>
+          </select>
+        </div>
+        <div class="flex-1 min-w-[160px]">
+          <label for="fromDate" class="block text-xs uppercase tracking-wide font-normal text-gray-500 dark:text-gray-400 mb-1">From Date</label>
+          <input 
+            id="fromDate"
+            type="date" 
+            [(ngModel)]="fromDate" 
+            class="w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:outline-none focus:border-gray-900 dark:focus:border-white text-gray-900 dark:text-white"
+            aria-label="Select start date"
+          />
+        </div>
+        <div class="flex-1 min-w-[160px]">
+          <label for="toDate" class="block text-xs uppercase tracking-wide font-normal text-gray-500 dark:text-gray-400 mb-1">To Date</label>
+          <input 
+            id="toDate"
+            type="date" 
+            [(ngModel)]="toDate" 
+            class="w-full px-4 py-3 border-0 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:outline-none focus:border-gray-900 dark:focus:border-white text-gray-900 dark:text-white"
+            aria-label="Select end date"
+          />
+        </div>
+        <div class="flex gap-4">
+          <button 
+            [disabled]="selectedCategory === 'default'"
+            (click)="fetchReport()" 
+            class="inline-flex disabled:cursor-not-allowed items-center justify-center px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-gray-900 dark:border-white hover:bg-black dark:hover:bg-gray-100 text-xs uppercase tracking-wide font-medium transition-colors"
+            aria-label="Generate report"
+          >
+            Get Report
+          </button>
+          <button 
+            *ngIf="reportData.length > 0" 
+            (click)="exportToExcel()" 
+            class="inline-flex items-center justify-center px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-gray-900 dark:border-white hover:bg-black dark:hover:bg-gray-100 text-xs uppercase tracking-wide font-medium transition-colors"
+            aria-label="Download report as Excel"
+          >
+            Download as Excel
+          </button>
+          <button 
+            *ngIf="reportData.length > 0" 
+            (click)="resetFilters()" 
+            class="inline-flex items-center justify-center px-6 py-2.5 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-xs uppercase tracking-wide font-medium transition-colors"
+            aria-label="Reset filters"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div *ngIf="selectedCategory === 'orders' && reportData.length > 0" class="overflow-x-auto mb-6">
+      <h2 class="text-xl font-light uppercase tracking-wide text-gray-900 dark:text-white mb-4">Orders Report</h2>
+      <table class="min-w-full table-auto border border-gray-200 dark:border-gray-800">
+        <thead class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+          <tr class="text-left">
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Image</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Product</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Category</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Quantity</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Subtotal</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Shipping</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Total</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Status</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Payment ID</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Date</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+          <tr *ngFor="let order of reportData" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800">
+              <img [src]="order.product.imageUrl" alt="Product {{ order.product.name }}" class="h-12 w-12 object-cover border border-gray-200 dark:border-gray-800"/>
+            </td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">{{ order.product.name }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">{{ order.product.category }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">{{ order.quantity }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">₹{{ order.subtotal }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">₹{{ order.shipping }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300">₹{{ order.totalPrice }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">{{ order.orderStatus }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-xs text-gray-700 dark:text-gray-300">{{ order.paymentId }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">{{ order.formattedDate }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Products Table -->
+    <div *ngIf="selectedCategory === 'products' && reportData.length > 0" class="overflow-x-auto mb-6">
+      <h2 class="text-xl font-light uppercase tracking-wide text-gray-900 dark:text-white mb-4">Products Report</h2>
+      <table class="min-w-full table-auto border border-gray-200 dark:border-gray-800">
+        <thead class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+          <tr class="text-left">
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Image</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Name</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Description</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Price</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Stock</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Category</th>
+            <th class="px-4 py-4 text-xs uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400">Created At</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+          <tr *ngFor="let product of reportData" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800">
+              <img [src]="product.imageUrl" alt="Product {{ product.name }}" class="h-12 w-12 object-cover border border-gray-200 dark:border-gray-800"/>
+            </td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">{{ product.name }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">{{ product.description }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">₹{{ product.price }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">{{ product.stock }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">{{ product.category }}</td>
+            <td class="px-4 py-4 border border-gray-200 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300">{{ product.createdAt | date:'medium' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- No Data Message -->
+    <div *ngIf="reportData.length === 0" class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-8 text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+      </div>
+      <h2 class="text-xl font-light uppercase tracking-wide text-gray-900 dark:text-white mb-3">No Report Data</h2>
+      <p class="text-gray-500 dark:text-gray-400">No report data found for selected category and date range.</p>
+    </div>
+  </div>
+</app-admin-layout>
